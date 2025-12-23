@@ -2,15 +2,35 @@
 
 import { CheckCircle2, Clock, Shield, Lock, TrendingUp, Zap } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { AgentStep, LoanDetails } from "@/lib/types"
 
-const agentSteps = [
-  { name: "Master Agent", status: "completed", description: "Request received" },
-  { name: "Verification Agent", status: "active", description: "Analyzing PAN..." },
-  { name: "Underwriting Agent", status: "waiting", description: "Waiting" },
-  { name: "Approval Agent", status: "waiting", description: "Pending" },
-]
+interface FinancialInsightsPanelProps {
+  agentSteps: AgentStep[]
+  loanDetails: LoanDetails
+  estimatedEmi?: number
+  estimatedRate?: number
+}
 
-export function FinancialInsightsPanel() {
+// Default values to prevent crashes if props are missing during dev
+const defaultSteps: AgentStep[] = []
+const defaultDetails: LoanDetails = {
+  intentDetected: false,
+  amount: 0,
+  purpose: '',
+  monthlyIncome: 0,
+  employmentType: null,
+  city: '',
+  name: '',
+  pan: '',
+  aadhaar: ''
+}
+
+export function FinancialInsightsPanel({
+  agentSteps = defaultSteps,
+  loanDetails = defaultDetails,
+  estimatedEmi,
+  estimatedRate
+}: FinancialInsightsPanelProps) {
   return (
     <aside className="w-[320px] bg-slate-50 p-4 overflow-y-auto">
       <div className="space-y-4">
@@ -25,17 +45,16 @@ export function FinancialInsightsPanel() {
           <CardContent className="pt-0">
             <div className="space-y-4">
               {agentSteps.map((step, index) => (
-                <div key={step.name} className="flex gap-3">
+                <div key={step.id || step.name} className="flex gap-3">
                   {/* Vertical Line Connector */}
                   <div className="flex flex-col items-center">
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                        step.status === "completed"
+                      className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${step.status === "completed"
                           ? "bg-emerald-100"
                           : step.status === "active"
                             ? "bg-blue-100"
                             : "bg-slate-100"
-                      }`}
+                        }`}
                     >
                       {step.status === "completed" ? (
                         <CheckCircle2 className="w-4 h-4 text-emerald-600" />
@@ -47,9 +66,8 @@ export function FinancialInsightsPanel() {
                     </div>
                     {index < agentSteps.length - 1 && (
                       <div
-                        className={`w-0.5 flex-1 mt-1 ${
-                          step.status === "completed" ? "bg-emerald-200" : "bg-slate-200"
-                        }`}
+                        className={`w-0.5 flex-1 mt-1 ${step.status === "completed" ? "bg-emerald-200" : "bg-slate-200"
+                          }`}
                       />
                     )}
                   </div>
@@ -80,22 +98,31 @@ export function FinancialInsightsPanel() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Amount</span>
-                <span className="text-lg font-bold text-white">₹5,00,000</span>
+                <span className="text-lg font-bold text-white">
+                  {loanDetails.amount ? `₹${loanDetails.amount.toLocaleString()}` : '---'}
+                </span>
               </div>
               <div className="h-px bg-slate-700" />
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Interest Rate</span>
-                <span className="text-lg font-semibold text-emerald-400">10.5% p.a.</span>
+                <span className="text-lg font-semibold text-emerald-400">
+                  {estimatedRate ? `${estimatedRate}% p.a.` : '10.5% p.a.'}
+                </span>
               </div>
               <div className="h-px bg-slate-700" />
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">Tenure</span>
-                <span className="text-sm font-medium text-white">36 Months</span>
+                <span className="text-sm font-medium text-white">
+                  {/* We could make this dynamic too, but keeping it simple for now */}
+                  36 Months
+                </span>
               </div>
               <div className="h-px bg-slate-700" />
               <div className="flex justify-between items-center">
                 <span className="text-sm text-slate-400">EMI</span>
-                <span className="text-lg font-bold text-white">₹16,264</span>
+                <span className="text-lg font-bold text-white">
+                  {estimatedEmi ? `₹${estimatedEmi.toLocaleString()}` : '---'}
+                </span>
               </div>
             </div>
             <div className="bg-slate-800/50 rounded-lg p-3">

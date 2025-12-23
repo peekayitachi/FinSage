@@ -3,13 +3,29 @@
 import { X, Download, CheckCircle2, Stamp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
+interface SanctionLetterData {
+  amount: number
+  interestRate: number
+  tenure: number
+  emi: number
+}
+
 interface SanctionLetterModalProps {
   isOpen: boolean
   onClose: () => void
+  data?: SanctionLetterData
 }
 
-export function SanctionLetterModal({ isOpen, onClose }: SanctionLetterModalProps) {
+export function SanctionLetterModal({ isOpen, onClose, data }: SanctionLetterModalProps) {
   if (!isOpen) return null
+
+  // Defaults if no data provided
+  const { amount, interestRate, tenure, emi } = data || {
+    amount: 500000,
+    interestRate: 10.5,
+    tenure: 36,
+    emi: 16264
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -69,62 +85,64 @@ export function SanctionLetterModal({ isOpen, onClose }: SanctionLetterModalProp
                   below:
                 </p>
 
+
                 <div className="grid grid-cols-2 gap-3 py-4 border-y border-slate-200">
                   <div className="bg-white rounded-lg p-3 text-center">
                     <p className="text-xs text-slate-500 mb-1">Loan Amount</p>
-                    <p className="text-lg font-bold text-slate-900">₹5,00,000</p>
+                    <p className="text-lg font-bold text-slate-900">₹{amount.toLocaleString()}</p>
                   </div>
                   <div className="bg-white rounded-lg p-3 text-center">
                     <p className="text-xs text-slate-500 mb-1">Interest Rate</p>
-                    <p className="text-lg font-bold text-emerald-600">10.5% p.a.</p>
+                    <p className="text-lg font-bold text-emerald-600">{interestRate}% p.a.</p>
                   </div>
                   <div className="bg-white rounded-lg p-3 text-center">
                     <p className="text-xs text-slate-500 mb-1">Tenure</p>
-                    <p className="text-lg font-bold text-slate-900">36 Months</p>
+                    <p className="text-lg font-bold text-slate-900">{tenure} Months</p>
                   </div>
                   <div className="bg-white rounded-lg p-3 text-center">
                     <p className="text-xs text-slate-500 mb-1">Monthly EMI</p>
-                    <p className="text-lg font-bold text-slate-900">₹16,264</p>
+                    <p className="text-lg font-bold text-slate-900">₹{emi.toLocaleString()}</p>
                   </div>
                 </div>
 
-                {/* Digital Signature */}
-                <div className="flex items-end justify-between pt-4">
-                  <div>
-                    <p className="text-xs text-slate-500 mb-2">Authorized Signatory</p>
-                    <div className="flex items-center gap-2">
-                      <Stamp className="w-8 h-8 text-blue-600" />
-                      <div className="border-b-2 border-dashed border-slate-300 w-32 pb-1">
-                        <p className="text-xs italic text-slate-400">Digital Signature</p>
-                      </div>
+              </div>
+
+              {/* Digital Signature */}
+              <div className="flex items-end justify-between pt-4">
+                <div>
+                  <p className="text-xs text-slate-500 mb-2">Authorized Signatory</p>
+                  <div className="flex items-center gap-2">
+                    <Stamp className="w-8 h-8 text-blue-600" />
+                    <div className="border-b-2 border-dashed border-slate-300 w-32 pb-1">
+                      <p className="text-xs italic text-slate-400">Digital Signature</p>
                     </div>
-                    <p className="text-xs font-medium text-slate-700 mt-2">FinSage Finance Ltd.</p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xs text-slate-500">Date</p>
-                    <p className="text-sm font-medium text-slate-900">
-                      {new Date().toLocaleDateString("en-IN", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </p>
-                  </div>
+                  <p className="text-xs font-medium text-slate-700 mt-2">FinSage Finance Ltd.</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-slate-500">Date</p>
+                  <p className="text-sm font-medium text-slate-900">
+                    {new Date().toLocaleDateString("en-IN", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </p>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Actions */}
-          <div className="px-6 pb-6 flex gap-3">
-            <Button variant="outline" className="flex-1 rounded-xl h-11 bg-transparent" onClick={onClose}>
-              Review Later
-            </Button>
-            <Button className="flex-1 rounded-xl h-11 bg-slate-900 hover:bg-slate-800 gap-2">
-              <Download className="w-4 h-4" />
-              Accept & Download
-            </Button>
-          </div>
+        {/* Actions */}
+        <div className="px-6 pb-6 flex gap-3">
+          <Button variant="outline" className="flex-1 rounded-xl h-11 bg-transparent" onClick={onClose}>
+            Review Later
+          </Button>
+          <Button className="flex-1 rounded-xl h-11 bg-slate-900 hover:bg-slate-800 gap-2">
+            <Download className="w-4 h-4" />
+            Accept & Download
+          </Button>
         </div>
       </div>
     </div>
